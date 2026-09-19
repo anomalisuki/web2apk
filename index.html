@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0b1020">
+  <title>Web to APK Builder</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%236d5dfc'/%3E%3Cpath d='M27 28h46v14H43v8h25v13H43v15H27z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div class="badge">ANDROID • APK</div>
+      <h1>Web to APK Builder</h1>
+      <p>Ubah website publik menjadi aplikasi Android dengan nama, logo, package name, dan versi yang bisa kamu tentukan.</p>
+    </header>
+
+    <section class="card">
+      <form id="builderForm">
+        <label>
+          <span>URL website <b>*</b></span>
+          <input id="url" name="url" type="url" placeholder="https://contoh.com" required autocomplete="url">
+          <small>Wajib. Website harus dapat diakses publik melalui HTTPS.</small>
+        </label>
+
+        <div class="grid">
+          <label>
+            <span>Nama APK</span>
+            <input id="name" name="name" type="text" placeholder="Kosong = ambil title website">
+            <small>Jika kosong, builder mencoba mengambil &lt;title&gt; website.</small>
+          </label>
+
+          <label>
+            <span>Logo APK</span>
+            <div class="file-row">
+              <input id="iconFile" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml">
+              <button class="ghost" id="clearIcon" type="button">Hapus</button>
+            </div>
+            <small>Kosong = coba ambil favicon website.</small>
+          </label>
+        </div>
+
+        <div id="iconPreview" class="icon-preview hidden">
+          <img id="previewImg" alt="Preview logo">
+          <div><strong>Logo dipilih</strong><small id="iconSource"></small></div>
+        </div>
+
+        <div class="grid">
+          <label>
+            <span>Package name <b>*</b></span>
+            <input id="packageId" name="packageId" type="text" placeholder="com.contoh.aplikasi" required>
+            <small>Format Android: com.domain.namaaplikasi</small>
+          </label>
+
+          <label>
+            <span>Versi APK</span>
+            <input id="version" name="version" type="text" placeholder="Kosong = 1.0.0">
+            <small>Contoh: 1.0.0 atau 1.2.3.</small>
+          </label>
+        </div>
+
+        <div class="summary" id="summary">
+          <div><span>URL</span><strong id="sumUrl">—</strong></div>
+          <div><span>Nama</span><strong id="sumName">Otomatis</strong></div>
+          <div><span>Package</span><strong id="sumPackage">—</strong></div>
+          <div><span>Versi</span><strong id="sumVersion">1.0.0</strong></div>
+        </div>
+
+        <button class="primary" id="buildBtn" type="submit">
+          <span id="btnText">Buat APK</span>
+          <span id="spinner" class="spinner hidden"></span>
+        </button>
+
+        <div id="status" class="status" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <section class="info">
+      <h2>Cara kerja</h2>
+      <ol>
+        <li>Masukkan URL website dan package name.</li>
+        <li>Field nama, logo, dan versi boleh dikosongkan.</li>
+        <li>Builder akan mencoba mengambil title dan favicon jika field tersebut kosong.</li>
+        <li>APK dibuat oleh layanan CloudAPK/PWABuilder dan hasilnya diunduh sebagai paket ZIP.</li>
+      </ol>
+      <p class="note">Catatan: website tujuan harus publik dan dapat diakses oleh server pembuat APK. Website dengan login, firewall, atau bot protection dapat gagal dipaketkan.</p>
+    </section>
+
+    <footer>
+      <span>Web to APK Builder</span>
+      <a href="https://www.pwabuilder.com/" target="_blank" rel="noopener">PWABuilder</a>
+    </footer>
+  </main>
+  <script src="/app.js"></script>
+</body>
+</html>
