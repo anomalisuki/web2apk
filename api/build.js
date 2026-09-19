@@ -5,6 +5,15 @@ export default async function handler(req, res) {
   }
 
   try {
+    // CloudAPK has a relatively small request limit. Reject oversized
+    // requests with a useful message rather than returning a generic 413.
+    const serialized = JSON.stringify(req.body ?? {});
+    if (Buffer.byteLength(serialized, "utf8") > 900000) {
+      return res.status(413).send(
+        "Payload terlalu besar. Logo APK harus dikompres hingga di bawah 180 KB."
+      );
+    }
+
     const upstream = await fetch(
       "https://pwabuilder-cloudapk.azurewebsites.net/generateAppPackage",
       {
