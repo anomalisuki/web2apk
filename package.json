@@ -1,0 +1,7 @@
+{
+  "name": "web-to-apk-builder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static Web to APK builder UI for Vercel",
+  "scripts": { "dev": "vercel dev" }
+}
