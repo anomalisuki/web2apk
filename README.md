@@ -21,10 +21,9 @@ Website ringan yang bisa di-host di **Vercel** atau platform static/serverless y
 ## Catatan teknis
 Build Android dilakukan oleh layanan CloudAPK/PWABuilder, bukan oleh runtime Vercel. Ini penting karena proses Gradle/Bubblewrap dapat berlangsung lebih lama daripada batas waktu serverless gratis.
 
-Frontend mengirim request langsung dari browser ke:
-`https://pwabuilder-cloudapk.azurewebsites.net/generateAppPackage`
+Build APK sekarang dilewatkan melalui `/api/build` milik Vercel terlebih dahulu. Ini mencegah error browser `Failed to fetch` akibat CORS ketika browser mencoba mengakses CloudAPK secara langsung.
 
-Endpoint tersebut merupakan layanan packaging Android CloudAPK yang digunakan oleh PWABuilder. Jika endpoint publik tersebut berubah atau CORS-nya dinonaktifkan, UI tetap dapat di-host, tetapi endpoint build perlu diperbarui.
+Vercel kemudian meneruskan request ke layanan Android packaging CloudAPK/PWABuilder. Layanan tersebut memang menyediakan endpoint `/generateAppPackage` untuk menghasilkan ZIP yang berisi paket Android.
 
 Field logo otomatis memakai favicon. Untuk hasil paling konsisten, upload PNG logo sendiri. Website tujuan harus publik dan dapat diakses oleh layanan packaging.
 
@@ -36,3 +35,7 @@ vercel dev
 
 ## Lisensi
 Project ini adalah wrapper/UI sederhana. Layanan packaging eksternal memiliki ketentuan dan lisensinya sendiri.
+
+
+## Perbaikan versi ini
+Versi ini memperbaiki `Failed to fetch` yang terjadi karena request CloudAPK sebelumnya dilakukan langsung dari browser (cross-origin). Sekarang browser hanya memanggil endpoint Vercel `/api/build`, lalu Vercel melakukan request server-to-server ke CloudAPK.
