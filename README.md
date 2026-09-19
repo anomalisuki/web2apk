@@ -39,3 +39,14 @@ Project ini adalah wrapper/UI sederhana. Layanan packaging eksternal memiliki ke
 
 ## Perbaikan versi ini
 Versi ini memperbaiki `Failed to fetch` yang terjadi karena request CloudAPK sebelumnya dilakukan langsung dari browser (cross-origin). Sekarang browser hanya memanggil endpoint Vercel `/api/build`, lalu Vercel melakukan request server-to-server ke CloudAPK.
+
+
+## Perbaikan Payload Too Large
+Upload logo sekarang otomatis diperkecil menjadi maksimal sekitar 180 KB sebelum dikirim. Ini menghindari `413 Payload Too Large` dari Vercel/CloudAPK. Logo tetap dipakai sebagai icon APK.
+
+
+### Aturan ukuran logo
+- Jika lebar **dan** tinggi logo sudah `<= 512px`, file dipakai dalam ukuran aslinya.
+- Jika salah satu dimensinya `> 512px`, logo otomatis di-resize secara proporsional sehingga sisi terpanjang menjadi `512px`.
+- Rasio gambar dipertahankan.
+- Transparansi logo dipertahankan saat proses resize dengan PNG.
