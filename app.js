@@ -97,11 +97,12 @@ form.addEventListener("submit", async (e)=>{
     showStatus("Mengirim permintaan ke CloudAPK. Proses build dapat memerlukan beberapa menit…","info");
     btnText.textContent="Membangun APK…";
 
-    const endpoint="https://pwabuilder-cloudapk.azurewebsites.net/generateAppPackage";
-    const res=await fetch(endpoint,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+    // Build through our Vercel serverless proxy instead of calling CloudAPK
+    // directly from the browser. This avoids browser CORS failures.
+    const res=await fetch("/api/build",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
     if(!res.ok){
       const t=await res.text().catch(()=> "");
-      throw new Error(`Server builder mengembalikan ${res.status}. ${t.slice(0,220)}`);
+      throw new Error(t || `Server builder mengembalikan ${res.status}.`);
     }
     const blob=await res.blob();
     const cd=res.headers.get("content-disposition")||"";
