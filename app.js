@@ -21,9 +21,15 @@ fileEl.addEventListener("change",()=>{
   const f=fileEl.files[0];
   if(!f){ iconDataUrl=null; preview.classList.add("hidden"); return; }
   if(f.size>2*1024*1024){ showStatus("Logo terlalu besar. Maksimal 2 MB.", "error"); fileEl.value=""; return; }
-  const r=new FileReader();
-  r.onload=()=>{ iconDataUrl=r.result; previewImg.src=iconDataUrl; iconSource.textContent=f.name; preview.classList.remove("hidden"); };
-  r.readAsDataURL(f);
+  compressIcon(f).then(dataUrl=>{
+    iconDataUrl=dataUrl;
+    previewImg.src=dataUrl;
+    iconSource.textContent=`${f.name} • ukuran asli dipertahankan jika ≤ 512px`;
+    preview.classList.remove("hidden");
+  }).catch(err=>{
+    showStatus(err.message || "Logo tidak dapat diproses.", "error");
+    fileEl.value="";
+  });
 });
 $("#clearIcon").addEventListener("click",()=>{fileEl.value="";iconDataUrl=null;preview.classList.add("hidden");});
 
@@ -38,6 +44,37 @@ async function getMetadata(url){
 function iconUrlFromMeta(url, meta){
   if(meta.favicon) return meta.favicon;
   try{return new URL("/favicon.ico",url).href}catch{return null}
+}
+
+async function compressIcon(file){
+  // Only resize when one of the image dimensions is larger than 512px.
+  // Images that are already <= 512px are kept unchanged.
+  const bitmap = await createImageBitmap(file);
+
+  if (bitmap.width <= 512 && bitmap.height <= 512) {
+    bitmap.close();
+    return await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error("Logo tidak dapat dibaca."));
+      reader.readAsDataURL(file);
+    });
+  }
+
+  const scale = 512 / Math.max(bitmap.width, bitmap.height);
+  const w = Math.max(1, Math.round(bitmap.width * scale));
+  const h = Math.max(1, Math.round(bitmap.height * scale));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = w;
+  canvas.height = h;
+
+  const ctx = canvas.getContext("2d");
+  ctx.drawImage(bitmap, 0, 0, w, h);
+  bitmap.close();
+
+  // Keep transparency for logos by using PNG after resizing.
+  return canvas.toDataURL("image/png");
 }
 
 function makePayload(cfg){
